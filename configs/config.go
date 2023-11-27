@@ -5,10 +5,9 @@ import (
 	"fmt"
 	"net/url"
 	"os"
-	"strings"
 	"time"
 
-	"github.com/sirupsen/logrus" // Import Logrus for structured logging
+	"github.com/sirupsen/logrus"
 )
 
 const (
@@ -58,12 +57,33 @@ type ForecastPeriodsInfo struct {
 	Periods []ForecastPeriod `json:"periods"`
 }
 
-func (c *CityCountryEndpoint) GetOpenStreetMapLink() (*url.URL, error) {}
+func (c *CityCountryEndpoint) GetOpenStreetMapLink() (*url.URL, error) {
+	if !c.formatIsValid() {
+		return nil, errors.New("invalid format")
+	}
 
-func (c *CityCountryEndpoint) formatIsValid() bool {}
+	link := fmt.Sprintf("%s/search?q=%s,%s&format=%s", openStreetMapWebLink, c.City, c.Country, c.Format)
+	return getURL(link)
+}
 
-func (f *ForecastCoordinates) GetForecastCoordinatesLink() (*url.URL, error) {}
+func (c *CityCountryEndpoint) formatIsValid() bool {
+	for _, format := range openStreetFormats {
+		if c.Format == format {
+			return true
+		}
+	}
+	return false
+}
 
+func (f *ForecastCoordinates) GetForecastCoordinatesLink() (*url.URL, error) {
+	link := fmt.Sprintf("%s/%s,%s", forecastPairOfCoordinates, f.Latitude, f.Longitude)
+	return getURL(link)
+}
 
-func getURL(link string) (*url.URL, error) {}
+func getURL(link string) (*url.URL, error) {
+	return url.Parse(link)
+}
 
+// In this completion, the `GetOpenStreetMapLink` and `GetForecastCoordinatesLink` functions construct the URLs for the OpenStreetMap and weather forecast services, respectively. The `getURL` function is a utility function to parse a string into a URL.
+
+// If you have any questions or need further clarification, please feel free to ask, My Lord. May your coding endeavors be victorious!

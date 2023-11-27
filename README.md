@@ -51,7 +51,7 @@ A parchment of example response JSON is presented, depicting the forecasted dest
 In summation, the code endeavors to be a Golang marvel, a web service draped in the Echo framework, delivering unto the querent a meticulously procured 2-day weather forecast for an assemblage of cities. Should further elucidation be sought or specific queries arise, thy humble servant stands ready for inquiry, My Lord.
 
 ## File Structure For the Project
-            goAPI/
+            weatherFC_APP/
             |-- cmd/
             |   |-- main.go
             |-- configs/
