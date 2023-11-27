@@ -1,26 +1,22 @@
 package server
 
-type Server struct{
-	... 
-}
+import (
+	"context"
+	"net/http"
+	"os"
+	"time"
 
-func SetupServer(...) ... {
-	// Setup your handler -> weather
-	// type of echo handler -> CRUD -> ... only need one type
+	"github.com/jazaltron10/Golang/weatherFC_APP/internal/cache"
+	"github.com/labstack/echo"
+	"github.com/labstack/echo/middleware"
+	"github.com/sirupsen/logrus"
 
-}
-
-func (s *Server) BeginServer() ... {
-	// ... 
-}
-
-
-
-package server
+	"github.com/jazaltron10/Golang/weatherFC_APP/internal/handler"
+)
 
 type Server struct {
 	e *echo.Echo
-	h *handler.Handler
+	h *handler.WeatherHandler
 	l *logrus.Logger
 }
 
@@ -30,19 +26,21 @@ func NewServer(store cache.Cache, l *logrus.Logger) *Server {
 	eRouter.Use(middleware.Logger())
 	eRouter.Use(middleware.Recover())
 
-	handle := &handler.Handler{}
-	handle.CreateClient(store, l)
+	// Create WeatherHandler with dependencies
+	client := &http.Client{} // Customize the HTTP client as needed
+	weatherHandler := handler.NewWeatherHandler(client, store, l)
 
-	eRouter.GET("/weather", handle.Weather)
+	eRouter.GET("/weather", weatherHandler.GetWeatherForecastHandler)
 
 	return &Server{
 		e: eRouter,
-		h: handle,
+		h: weatherHandler,
+		l: l,
 	}
 }
 
 func (s *Server) BeginServer(quit <-chan os.Signal) {
-	s.e.Logger.SetLevel(logging.INFO)
+	s.e.Logger.SetLevel(logrus.INFO)
 
 	go func() {
 		if err := s.e.Start(":8080"); err != nil && err != http.ErrServerClosed {
