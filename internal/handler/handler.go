@@ -1,8 +1,7 @@
-
-package api
+// internal/handler/handler.go
+package handler
 
 import (
-	"encoding/json"
 	"fmt"
 	"io"
 	"net"
@@ -19,11 +18,15 @@ import (
 
 type Handler struct {
 	c     *http.Client
-	store cache.Cache
+	store cache.InternalCache
 	l     *logrus.Logger
 }
 
-func (h *Handler) CreateClient(store cache.Cache, l *logrus.Logger) {
+func NewHandler() *Handler {
+	return &Handler{}
+}
+
+func (h *Handler) CreateClient(store cache.InternalCache, l *logrus.Logger) {
 	h.c = &http.Client{
 		Transport: &http.Transport{
 			Dial: (&net.Dialer{
@@ -75,7 +78,7 @@ func (h *Handler) GetWeatherForecastHandler(c echo.Context) error {
 }
 
 func (h *Handler) getCoordinates(city string) (*url.URL, error) {
-	endpoint := &CityCountryEndpoint{
+	endpoint := &forecast.CityCountryEndpoint{
 		City:   city,
 		Format: "json", // Assuming JSON format for coordinates
 	}
@@ -89,19 +92,16 @@ func (h *Handler) getCoordinates(city string) (*url.URL, error) {
 }
 
 func (h *Handler) getWeatherForecast(coordinates *url.URL) (forecast.CityForecast, error) {
-	// Fetch the forecast URL for the coordinates
 	forecastLink, err := h.getForecastURL(coordinates)
 	if err != nil {
 		return forecast.CityForecast{}, fmt.Errorf("error getting forecast for coordinates %s: %v", coordinates.String(), err)
 	}
 
-	// Fetch the forecast data
 	forecastData, err := h.fetchData(forecastLink)
 	if err != nil {
 		return forecast.CityForecast{}, fmt.Errorf("error fetching forecast data for coordinates %s: %v", coordinates.String(), err)
 	}
 
-	// Parse the forecast data
 	cityForecast, err := forecast.ParseForecast(forecastData)
 	if err != nil {
 		return forecast.CityForecast{}, fmt.Errorf("error parsing forecast data for coordinates %s: %v", coordinates.String(), err)
@@ -111,7 +111,7 @@ func (h *Handler) getWeatherForecast(coordinates *url.URL) (forecast.CityForecas
 }
 
 func (h *Handler) getForecastURL(coordinates *url.URL) (*url.URL, error) {
-	forecastCoordinates := &ForecastCoordinates{
+	forecastCoordinates := &forecast.ForecastCoordinates{
 		Latitude:  coordinates.Query().Get("lat"),
 		Longitude: coordinates.Query().Get("lon"),
 	}
@@ -125,14 +125,12 @@ func (h *Handler) getForecastURL(coordinates *url.URL) (*url.URL, error) {
 }
 
 func (h *Handler) fetchData(link *url.URL) ([]byte, error) {
-	// Fetch data using the HTTP client
 	response, err := h.c.Get(link.String())
 	if err != nil {
 		return nil, fmt.Errorf("error fetching data from URL %s: %v", link.String(), err)
 	}
 	defer response.Body.Close()
 
-	// Read the response body
 	data, err := io.ReadAll(response.Body)
 	if err != nil {
 		return nil, fmt.Errorf("error reading data from response body: %v", err)
