@@ -1,3 +1,4 @@
+// server.go
 package server
 
 import (
@@ -10,7 +11,6 @@ import (
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 	"github.com/sirupsen/logrus"
-
 	"github.com/jazaltron10/Golang/weatherFC_APP/internal/handler"
 )
 
@@ -20,7 +20,7 @@ type Server struct {
 	l *logrus.Logger
 }
 
-func NewServer(store cache.Cache, l *logrus.Logger) *Server {
+func NewServer(store cache.InternalCache, l *logrus.Logger) *Server {
 	eRouter := echo.New()
 
 	eRouter.Use(middleware.Logger())

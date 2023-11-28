@@ -3,6 +3,7 @@ package handler
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/labstack/echo/v4"
 	"github.com/jazaltron10/Golang/weatherFC_APP/configs"
@@ -77,3 +78,4 @@ func (wh *WeatherHandler) GetWeatherForecastHandler(c echo.Context) error {
 
 // Additional helper functions...
 
+// The additional helper functions (e.g., getCoordinates, getWeatherForecast) should be taken from the modified handler.go file.
