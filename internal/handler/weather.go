@@ -3,12 +3,11 @@ package handler
 
 import (
 	"net/http"
-	"strings"
 
 	"github.com/labstack/echo/v4"
-	"github.com/jazaltron10/Golang/weatherFC_APP/configs"
+	// "github.com/jazaltron10/Golang/weatherFC_APP/configs"
 	"github.com/jazaltron10/Golang/weatherFC_APP/internal/cache"
-	"github.com/jazaltron10/Golang/weatherFC_APP/internal/forecast"
+	// "github.com/jazaltron10/Golang/weatherFC_APP/internal/handler"
 	"github.com/sirupsen/logrus"
 )
 
@@ -31,11 +30,18 @@ func NewWeatherHandler(client *http.Client, store cache.Cache, logger *logrus.Lo
 // GetWeatherForecastHandler handles the /weather endpoint and returns weather forecasts for the given cities.
 func (wh *WeatherHandler) GetWeatherForecastHandler(c echo.Context) error {
 	// Parse the list of cities from the query parameter
+
+	// TODO - Jasper - Implement the functions below 
+
+			/*
+
 	citiesParam := c.QueryParam("city")
 	cities := strings.Split(citiesParam, ",")
 
 	// Initialize a slice to store the forecast for each city
 	var forecasts []configs.ForecastPeriod
+
+	
 
 	// Iterate through each city and retrieve the forecast
 	for _, city := range cities {
@@ -46,6 +52,8 @@ func (wh *WeatherHandler) GetWeatherForecastHandler(c echo.Context) error {
 			forecasts = append(forecasts, cachedForecast...)
 		} else {
 			// Fetch and cache the forecast if not available in the cache
+
+
 			coordinates, err := wh.getCoordinates(city)
 			if err != nil {
 				wh.logger.Errorf("Error fetching coordinates for city %s: %v", city, err)
@@ -72,8 +80,11 @@ func (wh *WeatherHandler) GetWeatherForecastHandler(c echo.Context) error {
 	// Construct the response JSON
 	responseJSON := map[string]interface{}{"forecast": forecasts}
 
+	
 	// Send the response
 	return c.JSON(http.StatusOK, responseJSON)
+	*/
+	return nil
 }
 
 // Additional helper functions...

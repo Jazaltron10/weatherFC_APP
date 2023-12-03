@@ -8,10 +8,11 @@ import (
 	"time"
 
 	"github.com/jazaltron10/Golang/weatherFC_APP/internal/cache"
-	"github.com/labstack/echo"
-	"github.com/labstack/echo/middleware"
-	"github.com/sirupsen/logrus"
 	"github.com/jazaltron10/Golang/weatherFC_APP/internal/handler"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
+	"github.com/labstack/gommon/log"
+	"github.com/sirupsen/logrus"
 )
 
 type Server struct {
@@ -20,7 +21,7 @@ type Server struct {
 	l *logrus.Logger
 }
 
-func NewServer(store cache.InternalCache, l *logrus.Logger) *Server {
+func NewServer(store cache.Cache, l *logrus.Logger) *Server {
 	eRouter := echo.New()
 
 	eRouter.Use(middleware.Logger())
@@ -30,7 +31,13 @@ func NewServer(store cache.InternalCache, l *logrus.Logger) *Server {
 	client := &http.Client{} // Customize the HTTP client as needed
 	weatherHandler := handler.NewWeatherHandler(client, store, l)
 
-	eRouter.GET("/weather", weatherHandler.GetWeatherForecastHandler)
+	eRouter.GET("/weather", func(c echo.Context) error {
+		return weatherHandler.GetWeatherForecastHandler(c)
+	})
+
+	eRouter.GET("/test",  func(c echo.Context) error {
+		return  c.JSON(http.StatusOK, []byte("hello this is Jasper!! "))
+	})
 
 	return &Server{
 		e: eRouter,
@@ -39,18 +46,19 @@ func NewServer(store cache.InternalCache, l *logrus.Logger) *Server {
 	}
 }
 
-func (s *Server) BeginServer(quit <-chan os.Signal) {
-	s.e.Logger.SetLevel(logrus.INFO)
+func (s *Server) BeginServer(quit chan os.Signal) {
+	s.e.Logger.SetLevel(log.INFO)
 
 	go func() {
 		if err := s.e.Start(":8080"); err != nil && err != http.ErrServerClosed {
 			s.l.Fatal("shutting down the server")
 		}
 	}()
-
+	// Wait for an interrupt signal (Ctrl+C) or SIGTERM to gracefully shutdown the server
 	<-quit
 	s.gracefulShutdown()
 }
+
 
 func (s *Server) gracefulShutdown() {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -60,3 +68,15 @@ func (s *Server) gracefulShutdown() {
 		s.l.Fatal(err)
 	}
 }
+
+
+/*
+checkout 
+go Panic -> fatal handles panics 
+graceful shutdown
+
+*/
+
+// "aGVsbG8gdGhpcyBpcyBKYXNwZXIhISA="
+
+// https://www.base64decode.org/

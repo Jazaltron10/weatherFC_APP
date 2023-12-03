@@ -16,6 +16,7 @@ func main() {
 
     // Initialize logger
     logger := logrus.New()
+    
     logger.SetFormatter(&logrus.TextFormatter{})
     logger.SetLevel(logrus.DebugLevel)
 
@@ -24,20 +25,6 @@ func main() {
 
     // Create server with the initialized logger and cache instance
     s := server.NewServer(cacheInstance, logger)
+    s.BeginServer(quit)
 
-    // Start the server in a goroutine
-    go func() {
-        if err := s.BeginServer(quit); err != nil {
-            logger.Errorf("Error starting server: %v", err)
-            close(quit)
-        }
-    }()
-
-    // Wait for an interrupt signal (Ctrl+C) or SIGTERM to gracefully shutdown the server
-    <-quit
-
-    // Gracefully shutdown the server
-    if err := s.GracefulShutdown(); err != nil {
-        logger.Errorf("Error shutting down server: %v", err)
-    }
 }

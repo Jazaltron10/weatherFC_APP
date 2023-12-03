@@ -12,6 +12,10 @@ type InternalCache struct {
 	data map[string][]configs.ForecastPeriod
 	mu   sync.RWMutex
 }
+type Cache interface{
+	Get(string) ([]configs.ForecastPeriod, error)
+	Set(string, []configs.ForecastPeriod) error
+}
 
 // NewInternalCache creates a new instance of InternalCache.
 func NewInternalCache() *InternalCache {
