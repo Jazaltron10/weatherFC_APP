@@ -2,16 +2,12 @@
 package forecast
 
 import (
-	"encoding/json"
-	"fmt"
-	"io"
 	"net/http"
-	"net/url"
 	"os"
 	"time"
 
 	"github.com/jazaltron10/Golang/weatherFC_APP/internal/cache"
-	"github.com/labstack/echo/v4"
+	// "github.com/labstack/echo/v4"
 	"github.com/sirupsen/logrus"
 )
 
@@ -20,6 +16,10 @@ var log = logrus.New()
 func init() {
 	log.Out = os.Stdout
 	log.SetLevel(logrus.InfoLevel)
+}
+
+type CityForcast struct {
+	// TODO: Maybe ?? 
 }
 
 type CityCountryEndpoint struct {
@@ -44,17 +44,19 @@ type PropertiesForecastInfo struct {
 
 type Handler struct {
 	c     *http.Client
-	store cache.InternalCache
+	store cache.Cache
 	l     *logrus.Logger
 }
 
-func NewHandler(client *http.Client, store cache.InternalCache, logger *logrus.Logger) *Handler {
+func NewHandler(client *http.Client, store cache.Cache, logger *logrus.Logger) *Handler {
 	return &Handler{
 		c:     client,
 		store: store,
 		l:     logger,
 	}
 }
+
+/*
 
 // Include other methods as needed based on your application's logic
 
@@ -85,6 +87,8 @@ func (h *Handler) getWeatherForecast(coordinates *url.URL) (PropertiesForecastIn
 
 	return forecastData, nil
 }
+
+
 
 func (h *Handler) getForecastURL(coordinates *url.URL) (*url.URL, error) {
 	forecastCoordinates := &ForecastCoordinates{
@@ -120,3 +124,5 @@ func (h *Handler) fetchData(link *url.URL) (PropertiesForecastInfo, error) {
 
 	return forecastData, nil
 }
+
+*/
