@@ -11,7 +11,7 @@ import (
 
 func main() {
     // Create a channel for graceful shutdown
-    quit := make(chan os.Signal, 1)
+    quit := make(chan os.Signal, 1) // channel of type os.signal that can store only 1 message at a time
     signal.Notify(quit, os.Interrupt, syscall.SIGTERM)
 
     // Initialize logger
@@ -28,3 +28,7 @@ func main() {
     s.BeginServer(quit)
 
 }
+
+
+// Hello, world or 你好， 世界 or Καλημέρα κόσμε or こ んに ち は世界\n")
+// }

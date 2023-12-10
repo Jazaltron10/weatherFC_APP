@@ -2,12 +2,16 @@
 package forecast
 
 import (
+	"encoding/json"
+	"fmt"
+	"io"
 	"net/http"
+	"net/url"
 	"os"
 	"time"
 
 	"github.com/jazaltron10/Golang/weatherFC_APP/internal/cache"
-	// "github.com/labstack/echo/v4"
+	// "github.com/jazaltron10/Golang/weatherFC_APP/configs"
 	"github.com/sirupsen/logrus"
 )
 
@@ -56,11 +60,9 @@ func NewHandler(client *http.Client, store cache.Cache, logger *logrus.Logger) *
 	}
 }
 
-/*
 
-// Include other methods as needed based on your application's logic
 
-func (h *Handler) getCoordinates(city string) (*url.URL, error) {
+func (h *Handler) GetCoordinates(city string) (*url.URL, error) {
 	endpoint := &CityCountryEndpoint{
 		City:   city,
 		Format: "json", // Assuming JSON format for coordinates
@@ -74,34 +76,18 @@ func (h *Handler) getCoordinates(city string) (*url.URL, error) {
 	return link, nil
 }
 
-func (h *Handler) getWeatherForecast(coordinates *url.URL) (PropertiesForecastInfo, error) {
-	link, err := h.getForecastURL(coordinates)
+func (h *Handler) GetWeatherForecast(city string) (PropertiesForecastInfo, error) {
+	coordinatesLink, err := h.GetCoordinates(city)
 	if err != nil {
-		return PropertiesForecastInfo{}, fmt.Errorf("error getting forecast for coordinates %s: %v", coordinates.String(), err)
+		return PropertiesForecastInfo{}, fmt.Errorf("error getting coordinates: %v", err)
 	}
 
-	forecastData, err := h.fetchData(link)
+	forecastData, err := h.fetchData(coordinatesLink)
 	if err != nil {
-		return PropertiesForecastInfo{}, fmt.Errorf("error fetching forecast data for coordinates %s: %v", coordinates.String(), err)
+		return PropertiesForecastInfo{}, fmt.Errorf("error fetching forecast data: %v", err)
 	}
 
 	return forecastData, nil
-}
-
-
-
-func (h *Handler) getForecastURL(coordinates *url.URL) (*url.URL, error) {
-	forecastCoordinates := &ForecastCoordinates{
-		Latitude:  coordinates.Query().Get("lat"),
-		Longitude: coordinates.Query().Get("lon"),
-	}
-
-	link, err := forecastCoordinates.GetForecastCoordinatesLink()
-	if err != nil {
-		return nil, fmt.Errorf("error getting forecast URL for coordinates %s: %v", coordinates.String(), err)
-	}
-
-	return link, nil
 }
 
 func (h *Handler) fetchData(link *url.URL) (PropertiesForecastInfo, error) {
@@ -124,5 +110,3 @@ func (h *Handler) fetchData(link *url.URL) (PropertiesForecastInfo, error) {
 
 	return forecastData, nil
 }
-
-*/
