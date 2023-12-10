@@ -76,49 +76,39 @@ func (h *Handler) GetWeatherForecastHandler(c echo.Context) error {
 }
 
 func (h *Handler) getCoordinates(city string) (*url.URL, error) {
-	/*
 	endpoint := &forecast.CityCountryEndpoint{
 		City:   city,
 		Format: "json", // Assuming JSON format for coordinates
 	}
 
-	
 	link, err := endpoint.GetOpenStreetMapLink()
 	if err != nil {
-		return nil, fmt.Errorf("error getting coordinates for city %s: %v", city, err)
+		return nil, err
 	}
 
 	return link, nil
-	*/
-	return nil, nil
 }
 
 func (h *Handler) getWeatherForecast(coordinates *url.URL) (forecast.CityForcast, error) {
-	/*
 	forecastLink, err := h.getForecastURL(coordinates)
-	
 	if err != nil {
-		return forecast.CityForecast{}, fmt.Errorf("error getting forecast for coordinates %s: %v", coordinates.String(), err)
+		return forecast.CityForcast{}, err
 	}
 
 	forecastData, err := h.fetchData(forecastLink)
 	if err != nil {
-		return forecast.CityForecast{}, fmt.Errorf("error fetching forecast data for coordinates %s: %v", coordinates.String(), err)
+		return forecast.CityForcast{}, err
 	}
 
 	cityForecast, err := forecast.ParseForecast(forecastData)
 	if err != nil {
-		return forecast.CityForecast{}, fmt.Errorf("error parsing forecast data for coordinates %s: %v", coordinates.String(), err)
+		return forecast.CityForcast{}, err
 	}
 
 	return cityForecast, nil
-	*/
-	// TODO
-	return forecast.CityForcast{}, nil
 }
 
 func (h *Handler) getForecastURL(coordinates *url.URL) (*url.URL, error) {
-	/*
 	forecastCoordinates := &forecast.ForecastCoordinates{
 		Latitude:  coordinates.Query().Get("lat"),
 		Longitude: coordinates.Query().Get("lon"),
@@ -126,7 +116,7 @@ func (h *Handler) getForecastURL(coordinates *url.URL) (*url.URL, error) {
 
 	link, err := forecastCoordinates.GetForecastCoordinatesLink()
 	if err != nil {
-		return nil, fmt.Errorf("error getting forecast URL for coordinates %s: %v", coordinates.String(), err)
+		return nil, err
 	}
 
 	return link, nil
@@ -135,17 +125,14 @@ func (h *Handler) getForecastURL(coordinates *url.URL) (*url.URL, error) {
 func (h *Handler) fetchData(link *url.URL) ([]byte, error) {
 	response, err := h.c.Get(link.String())
 	if err != nil {
-		return nil, fmt.Errorf("error fetching data from URL %s: %v", link.String(), err)
+		return nil, err
 	}
 	defer response.Body.Close()
 
 	data, err := io.ReadAll(response.Body)
 	if err != nil {
-		return nil, fmt.Errorf("error reading data from response body: %v", err)
+		return nil, err
 	}
 
 	return data, nil
-	*/
-
-	return nil, nil
 }

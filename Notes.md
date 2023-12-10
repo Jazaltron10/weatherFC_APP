@@ -17,7 +17,7 @@ Hints:
 
 What we would like to see
 
-    1 .tiny service that works just fine (that we can launch it ideally via docker or command line).
+    1. tiny service that works just fine (that we can launch it ideally via docker or command line).
     2. thoughtful design & tests.
     3. implement a file cache (memory or file based) system without using any framework.
     ~ ReadMe file with the instructions for using the service.
