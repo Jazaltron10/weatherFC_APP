@@ -35,8 +35,8 @@ func NewServer(store cache.Cache, l *logrus.Logger) *Server {
 		return weatherHandler.GetWeatherForecastHandler(c)
 	})
 
-	eRouter.GET("/test",  func(c echo.Context) error {
-		return  c.JSON(http.StatusOK, []byte("hello this is Jasper!! "))
+	eRouter.GET("/test", func(c echo.Context) error {
+		return c.JSON(http.StatusOK, []byte("hello this is Jasper!! "))
 	})
 
 	return &Server{
@@ -59,7 +59,6 @@ func (s *Server) BeginServer(quit chan os.Signal) {
 	s.gracefulShutdown()
 }
 
-
 func (s *Server) gracefulShutdown() {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -69,10 +68,9 @@ func (s *Server) gracefulShutdown() {
 	}
 }
 
-
 /*
-checkout 
-go Panic -> fatal handles panics 
+checkout
+go Panic -> fatal handles panics
 graceful shutdown
 
 */

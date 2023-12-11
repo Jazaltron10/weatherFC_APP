@@ -45,3 +45,6 @@ COPY --from=build /app/init.sh /init.sh
 RUN chmod +x /init.sh
 
 ENTRYPOINT ["/init.sh"]
+
+
+# How would you run this? eneter teh docker command below? 

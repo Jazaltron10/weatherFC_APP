@@ -45,4 +45,3 @@ func TestForecastCoordinates_GetForecastCoordinatesLink(t *testing.T) {
 	assert.Contains(t, link.String(), "34.0522", "URL should contain the latitude")
 	assert.Contains(t, link.String(), "-118.2437", "URL should contain the longitude")
 }
-

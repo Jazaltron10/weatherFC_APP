@@ -2,14 +2,16 @@
 package handler
 
 import (
+	"encoding/json"
+	"io"
 	"net"
 	"net/http"
 	"net/url"
 	"strings"
 	"time"
 
+	"github.com/jazaltron10/Golang/weatherFC_APP/configs"
 	"github.com/jazaltron10/Golang/weatherFC_APP/internal/cache"
-	"github.com/jazaltron10/Golang/weatherFC_APP/internal/forecast"
 	"github.com/labstack/echo/v4"
 	"github.com/sirupsen/logrus"
 )
@@ -46,19 +48,19 @@ func (h *Handler) GetWeatherForecastHandler(c echo.Context) error {
 	cities := strings.Split(citiesParam, ",")
 
 	// Initialize a slice to store the forecast for each city
-	var forecasts []forecast.CityForcast
+	var forecasts []*configs.CityCountryEndpoint
 
 	// Iterate through each city and retrieve the forecast
 	for _, city := range cities {
-		// Fetch coordinates for the city
-		coordinates, err := h.getCoordinates(city)
+		// Fetch URL for coordinates for each city
+		coordinatesLink, err := h.getCoordinates(city)
 		if err != nil {
 			h.l.Errorf("Error fetching coordinates for city %s: %v", city, err)
 			continue
 		}
 
 		// Fetch the weather forecast for the coordinates
-		cityForecast, err := h.getWeatherForecast(coordinates)
+		cityForecast, err := h.getWeatherForecast(coordinatesLink)
 		if err != nil {
 			h.l.Errorf("Error fetching forecast for city %s: %v", city, err)
 			continue
@@ -76,7 +78,7 @@ func (h *Handler) GetWeatherForecastHandler(c echo.Context) error {
 }
 
 func (h *Handler) getCoordinates(city string) (*url.URL, error) {
-	endpoint := &forecast.CityCountryEndpoint{
+	endpoint := &configs.CityCountryEndpoint{
 		City:   city,
 		Format: "json", // Assuming JSON format for coordinates
 	}
@@ -89,27 +91,29 @@ func (h *Handler) getCoordinates(city string) (*url.URL, error) {
 	return link, nil
 }
 
-func (h *Handler) getWeatherForecast(coordinates *url.URL) (forecast.CityForcast, error) {
-	forecastLink, err := h.getForecastURL(coordinates)
+func (h *Handler) getWeatherForecast(coordinatesURL *url.URL) (*configs.CityCountryEndpoint, error) {
+	forecastLink, err := h.getForecastURL(coordinatesURL)
 	if err != nil {
-		return forecast.CityForcast{}, err
+		return nil, err
 	}
 
 	forecastData, err := h.fetchData(forecastLink)
 	if err != nil {
-		return forecast.CityForcast{}, err
+		return nil, err
 	}
 
-	cityForecast, err := forecast.ParseForecast(forecastData)
-	if err != nil {
-		return forecast.CityForcast{}, err
+	forcastInfo := &configs.CityCountryEndpoint{}
+
+	err =json.Unmarshal(forecastData, forcastInfo)
+	if err != nil{
+		return nil, err
 	}
 
-	return cityForecast, nil
+	return forcastInfo, nil
 }
 
 func (h *Handler) getForecastURL(coordinates *url.URL) (*url.URL, error) {
-	forecastCoordinates := &forecast.ForecastCoordinates{
+	forecastCoordinates := &configs.ForecastCoordinates{
 		Latitude:  coordinates.Query().Get("lat"),
 		Longitude: coordinates.Query().Get("lon"),
 	}
