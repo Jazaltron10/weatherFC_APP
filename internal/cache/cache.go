@@ -1,4 +1,3 @@
-
 package cache
 
 import (
@@ -12,7 +11,7 @@ type InternalCache struct {
 	data map[string][]configs.ForecastPeriod
 	mu   sync.RWMutex
 }
-type Cache interface{
+type Cache interface {
 	Get(string) ([]configs.ForecastPeriod, error)
 	Set(string, []configs.ForecastPeriod) error
 }

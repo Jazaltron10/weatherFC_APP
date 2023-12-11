@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/jazaltron10/Golang/weatherFC_APP/internal/cache"
-	// "github.com/jazaltron10/Golang/weatherFC_APP/configs"
+	"github.com/jazaltron10/Golang/weatherFC_APP/configs"
 	"github.com/sirupsen/logrus"
 )
 
@@ -24,11 +24,6 @@ func init() {
 
 type CityForcast struct {
 	// TODO: Maybe ?? 
-}
-
-type CityCountryEndpoint struct {
-	City   string
-	Format string
 }
 
 type ForecastCoordinates struct {
@@ -60,17 +55,17 @@ func NewHandler(client *http.Client, store cache.Cache, logger *logrus.Logger) *
 	}
 }
 
-
-
 func (h *Handler) GetCoordinates(city string) (*url.URL, error) {
-	endpoint := &CityCountryEndpoint{
+	endpoint := &configs.CityCountryEndpoint{
+		Country: "USA",
 		City:   city,
 		Format: "json", // Assuming JSON format for coordinates
 	}
 
+	
 	link, err := endpoint.GetOpenStreetMapLink()
 	if err != nil {
-		return nil, fmt.Errorf("error getting coordinates for city %s: %v", city, err)
+	 	return nil, fmt.Errorf("error getting coordinates for city %s: %v", city, err)
 	}
 
 	return link, nil

@@ -85,5 +85,3 @@ func getURL(link string) (*url.URL, error) {
 }
 
 // In this completion, the `GetOpenStreetMapLink` and `GetForecastCoordinatesLink` functions construct the URLs for the OpenStreetMap and weather forecast services, respectively. The `getURL` function is a utility function to parse a string into a URL.
-
-
