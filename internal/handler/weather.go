@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 
 	"github.com/jazaltron10/Golang/weatherFC_APP/configs"
 	"github.com/jazaltron10/Golang/weatherFC_APP/internal/cache"
@@ -42,6 +43,7 @@ func (wh *WeatherHandler) GetWeatherForecastHandler(c echo.Context) error {
 
 	// Iterate through each city and retrieve the forecast
 	for _, city := range cities {
+		city = strings.ToLower(strings.TrimSpace(city))
 		// Check if forecast data is available in the cache
 		cachedForecast, err := wh.store.Get(city)
 		if err == nil && cachedForecast != nil {
@@ -86,24 +88,37 @@ func (wh *WeatherHandler) GetWeatherForecastHandler(c echo.Context) error {
 func (wh *WeatherHandler) getCoordinates(city string) (configs.ForecastCoordinates, error) {
 	// Construct the API endpoint for OpenStreetMap Nominatim without
 	endpoint := fmt.Sprintf("https://nominatim.openstreetmap.org/search?q=%s&format=json&limit=1", url.QueryEscape(city))
-	// https://nominatim.openstreetmap.org/search?q=new%20york&format=json&limit=1
-	// Parse the endpoint URL.
-	coords:= []configs.ForecastCoordinates{{}}
+	coords := []configs.ForecastCoordinates{{}}
 
+	// Parse the endpoint URL.
 	link, err := url.Parse(endpoint)
 	if err != nil {
 		return coords[0], err
 	}
-	req, _ :=http.NewRequest(http.MethodGet, link.String(), nil)
-	res, _ :=wh.client.Do(req)
+
+	// Create a new HTTP request.
+	req, _ := http.NewRequest(http.MethodGet, link.String(), nil)
+	if err != nil {
+		return coords[0], err
+	}
+
+	// Make the request.
+	res, _ := wh.client.Do(req)
+	if err != nil {
+		return coords[0], err
+	}
 
 	defer res.Body.Close()
 
+	// Read the response body.
 	jsonReps, _ := io.ReadAll(res.Body)
+	if err != nil {
+		return coords[0], err
+	}
 
-	
+	// Unmarshal JSON response.
 	_ = json.Unmarshal(jsonReps, &coords)
-	
+
 	return coords[0], nil
 }
 
@@ -111,9 +126,7 @@ func (wh *WeatherHandler) getCoordinates(city string) (configs.ForecastCoordinat
 func (wh *WeatherHandler) getWeatherForecast(coordinates *configs.ForecastCoordinates) (configs.ForecastPeriod, error) {
 	// Construct the API endpoint for a weather forecast service
 	weatherEndpoint := fmt.Sprintf("https://api.weather.gov/points/%s,%s", coordinates.Latitude, coordinates.Longitude)
-	// https://api.weather.gov/points?lat=34.0536909&lon=-118.242766
-	// https://api.weather.gov/points/lat=34.0536909&lon=-118.242766
-	// https://api.weather.gov/points/34.0537,-118.2428
+
 	// Make a request to the weather API.
 	response, err := http.Get(weatherEndpoint)
 	if err != nil {
@@ -122,13 +135,44 @@ func (wh *WeatherHandler) getWeatherForecast(coordinates *configs.ForecastCoordi
 	defer response.Body.Close()
 
 	// Decode the response JSON.
-	var forecastData configs.ForecastPeriod
-	err = json.NewDecoder(response.Body).Decode(&forecastData)
+	var forecastData configs.PropertiesInfo
+	b, _ := io.ReadAll(response.Body)
+	err = json.Unmarshal(b,&forecastData)
 	if err != nil {
 		return configs.ForecastPeriod{}, fmt.Errorf("error decoding JSON from weather API (%s): %v", weatherEndpoint, err)
 	}
+	u, err := url.Parse(forecastData.Properties.ForecastURL)
+	if err != nil {
+		return configs.ForecastPeriod{}, fmt.Errorf("???? (%s): %v", weatherEndpoint, err)
+	}
+	var forecastPeriodsInfo configs.PropertiesForecastInfo
 
-	return forecastData, nil
+	resp, _:= http.Get(u.String())
+	b, _ = io.ReadAll(resp.Body)
+
+	if err := json.Unmarshal(b, &forecastPeriodsInfo); err != nil {
+	
+		return configs.ForecastPeriod{}, err
+	}
+
+	now := time.Now()
+	forecastInfo := make([]configs.ForecastPeriod, 0)
+
+	if len(forecastPeriodsInfo.Periods.Periods) > 0 {
+		for _, period := range forecastPeriodsInfo.Periods.Periods {
+			if period.EndTime.After(now) && period.StartTime.Before(now.Add(72*time.Hour)) {
+				forecastInfo = append(forecastInfo, period)
+				continue
+			}
+			if len(forecastInfo) != 0 {
+				break
+			}
+		}
+		return forecastInfo[0], nil
+	}
+
+	
+	return configs.ForecastPeriod{}, nil
 }
 
 // Additional helper functions...

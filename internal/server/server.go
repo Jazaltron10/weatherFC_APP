@@ -29,6 +29,9 @@ func NewServer(store cache.Cache, l *logrus.Logger) *Server {
 
 	// Create WeatherHandler with dependencies
 	client := &http.Client{} // Customize the HTTP client as needed
+	// h := handler.NewHandler()
+	// h.CreateClient(store , l )
+	// weatherHandler := handler.NewWeatherHandler(h.CreateClient(store , l ), store, l)
 	weatherHandler := handler.NewWeatherHandler(client, store, l)
 
 	eRouter.GET("/weather", func(c echo.Context) error {
@@ -78,3 +81,33 @@ graceful shutdown
 // "aGVsbG8gdGhpcyBpcyBKYXNwZXIhISA="
 
 // https://www.base64decode.org/
+
+
+
+/*
+
+func NewServer(store cache.Cache, l *logrus.Logger) *Server {
+	eRouter := echo.New()
+
+	eRouter.Use(middleware.Logger())
+	eRouter.Use(middleware.Recover())
+
+	// Create WeatherHandler with dependencies
+	client := &http.Client{} // Customize the HTTP client as needed
+	weatherHandler := handler.NewWeatherHandler(client, store, l)
+
+	eRouter.GET("/weather", func(c echo.Context) error {
+		return weatherHandler.GetWeatherForecastHandler(c)
+	})
+
+	eRouter.GET("/test", func(c echo.Context) error {
+		return c.JSON(http.StatusOK, []byte("hello this is Jasper!! "))
+	})
+
+	return &Server{
+		e: eRouter,
+		h: weatherHandler,
+		l: l,
+	}
+}
+*/
