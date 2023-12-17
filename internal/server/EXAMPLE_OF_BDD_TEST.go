@@ -1,5 +1,7 @@
 package server
 
+// import "net/http/httptest"
+
 // package secure
 
 // import (
@@ -84,3 +86,17 @@ package server
 // 	c.Check(err, IsNil)
 // 	c.Assert(match, Equals, true)
 // }
+
+// https://speedscale.com/blog/testing-golang-with-httptest/
+
+
+func TestSimpleHandlerPassingCacheTest(){
+	// Given a Http Tests for calling GetWeatherForecastHandler
+	// And when something is stored in the cache
+
+	// When I call the handler
+	// Then Expect the cache result to be returned
+	
+	// Then compare the result with my expected values
+
+}
