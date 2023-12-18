@@ -145,6 +145,9 @@ func (wh *WeatherHandler) getWeatherForecast(coordinates *configs.ForecastCoordi
 	if err != nil {
 		return configs.ForecastPeriod{}, fmt.Errorf("???? (%s): %v", weatherEndpoint, err)
 	}
+
+
+	
 	var forecastPeriodsInfo configs.PropertiesForecastInfo
 
 	resp, _:= http.Get(u.String())
@@ -154,6 +157,9 @@ func (wh *WeatherHandler) getWeatherForecast(coordinates *configs.ForecastCoordi
 	
 		return configs.ForecastPeriod{}, err
 	}
+
+
+
 
 	now := time.Now()
 	forecastInfo := make([]configs.ForecastPeriod, 0)

@@ -6,14 +6,15 @@ import (
 	"github.com/jazaltron10/Golang/weatherFC_APP/configs"
 )
 
+type Cache interface {
+	Get(string) ([]configs.ForecastPeriod, error)
+	Set(string, []configs.ForecastPeriod) error
+}
+
 // InternalCache is an in-memory cache database.
 type InternalCache struct {
 	data map[string][]configs.ForecastPeriod
 	mu   sync.RWMutex
-}
-type Cache interface {
-	Get(string) ([]configs.ForecastPeriod, error)
-	Set(string, []configs.ForecastPeriod) error
 }
 
 // NewInternalCache creates a new instance of InternalCache.

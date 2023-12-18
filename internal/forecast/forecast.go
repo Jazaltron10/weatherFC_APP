@@ -2,16 +2,16 @@
 package forecast
 
 import (
-	"encoding/json"
-	"fmt"
-	"io"
+	// "encoding/json"
+	// "fmt"
+	// "io"
 	"net/http"
-	"net/url"
+	// "net/url"
 	"os"
 	"time"
 
+	// "github.com/jazaltron10/Golang/weatherFC_APP/configs"
 	"github.com/jazaltron10/Golang/weatherFC_APP/internal/cache"
-	"github.com/jazaltron10/Golang/weatherFC_APP/configs"
 	"github.com/sirupsen/logrus"
 )
 
@@ -20,10 +20,6 @@ var log = logrus.New()
 func init() {
 	log.Out = os.Stdout
 	log.SetLevel(logrus.InfoLevel)
-}
-
-type CityForcast struct {
-	// TODO: Maybe ?? 
 }
 
 type ForecastCoordinates struct {
@@ -55,53 +51,52 @@ func NewHandler(client *http.Client, store cache.Cache, logger *logrus.Logger) *
 	}
 }
 
-func (h *Handler) GetCoordinates(city string) (*url.URL, error) {
-	endpoint := &configs.CityCountryEndpoint{
-		Country: "USA",
-		City:   city,
-		Format: "json", // Assuming JSON format for coordinates
-	}
+// func (h *Handler) GetCoordinates(city string) (*url.URL, error) {
+// 	endpoint := &configs.CityCountryEndpoint{
+// 		Country: "USA",
+// 		City:    city,
+// 		Format:  "json", // Assuming JSON format for coordinates
+// 	}
 
-	
-	link, err := endpoint.GetOpenStreetMapLink()
-	if err != nil {
-	 	return nil, fmt.Errorf("error getting coordinates for city %s: %v", city, err)
-	}
+// 	link, err := endpoint.GetOpenStreetMapLink()
+// 	if err != nil {
+// 		return nil, fmt.Errorf("error getting coordinates for city %s: %v", city, err)
+// 	}
 
-	return link, nil
-}
+// 	return link, nil
+// }
 
-func (h *Handler) GetWeatherForecast(city string) (PropertiesForecastInfo, error) {
-	coordinatesLink, err := h.GetCoordinates(city)
-	if err != nil {
-		return PropertiesForecastInfo{}, fmt.Errorf("error getting coordinates: %v", err)
-	}
+// func (h *Handler) GetWeatherForecast(city string) (PropertiesForecastInfo, error) {
+// 	coordinatesLink, err := h.GetCoordinates(city)
+// 	if err != nil {
+// 		return PropertiesForecastInfo{}, fmt.Errorf("error getting coordinates: %v", err)
+// 	}
 
-	forecastData, err := h.fetchData(coordinatesLink)
-	if err != nil {
-		return PropertiesForecastInfo{}, fmt.Errorf("error fetching forecast data: %v", err)
-	}
+// 	forecastData, err := h.fetchData(coordinatesLink)
+// 	if err != nil {
+// 		return PropertiesForecastInfo{}, fmt.Errorf("error fetching forecast data: %v", err)
+// 	}
 
-	return forecastData, nil
-}
+// 	return forecastData, nil
+// }
 
-func (h *Handler) fetchData(link *url.URL) (PropertiesForecastInfo, error) {
-	response, err := h.c.Get(link.String())
-	if err != nil {
-		return PropertiesForecastInfo{}, fmt.Errorf("error fetching data from URL %s: %v", link.String(), err)
-	}
-	defer response.Body.Close()
+// func (h *Handler) fetchData(link *url.URL) (PropertiesForecastInfo, error) {
+// 	response, err := h.c.Get(link.String())
+// 	if err != nil {
+// 		return PropertiesForecastInfo{}, fmt.Errorf("error fetching data from URL %s: %v", link.String(), err)
+// 	}
+// 	defer response.Body.Close()
 
-	data, err := io.ReadAll(response.Body)
-	if err != nil {
-		return PropertiesForecastInfo{}, fmt.Errorf("error reading data from response body: %v", err)
-	}
+// 	data, err := io.ReadAll(response.Body)
+// 	if err != nil {
+// 		return PropertiesForecastInfo{}, fmt.Errorf("error reading data from response body: %v", err)
+// 	}
 
-	var forecastData PropertiesForecastInfo
-	err = json.Unmarshal(data, &forecastData)
-	if err != nil {
-		return PropertiesForecastInfo{}, fmt.Errorf("error unmarshalling forecast data: %v", err)
-	}
+// 	var forecastData PropertiesForecastInfo
+// 	err = json.Unmarshal(data, &forecastData)
+// 	if err != nil {
+// 		return PropertiesForecastInfo{}, fmt.Errorf("error unmarshalling forecast data: %v", err)
+// 	}
 
-	return forecastData, nil
-}
+// 	return forecastData, nil
+// }
