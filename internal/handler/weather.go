@@ -137,7 +137,7 @@ func (wh *WeatherHandler) getWeatherForecast(coordinates *configs.ForecastCoordi
 	// Decode the response JSON.
 	var forecastData configs.PropertiesInfo
 	b, _ := io.ReadAll(response.Body)
-	err = json.Unmarshal(b,&forecastData)
+	err = json.Unmarshal(b, &forecastData)
 	if err != nil {
 		return configs.ForecastPeriod{}, fmt.Errorf("error decoding JSON from weather API (%s): %v", weatherEndpoint, err)
 	}
@@ -146,20 +146,15 @@ func (wh *WeatherHandler) getWeatherForecast(coordinates *configs.ForecastCoordi
 		return configs.ForecastPeriod{}, fmt.Errorf("???? (%s): %v", weatherEndpoint, err)
 	}
 
-
-	
 	var forecastPeriodsInfo configs.PropertiesForecastInfo
 
-	resp, _:= http.Get(u.String())
+	resp, _ := http.Get(u.String())
 	b, _ = io.ReadAll(resp.Body)
 
 	if err := json.Unmarshal(b, &forecastPeriodsInfo); err != nil {
-	
+
 		return configs.ForecastPeriod{}, err
 	}
-
-
-
 
 	now := time.Now()
 	forecastInfo := make([]configs.ForecastPeriod, 0)
@@ -177,7 +172,6 @@ func (wh *WeatherHandler) getWeatherForecast(coordinates *configs.ForecastCoordi
 		return forecastInfo[0], nil
 	}
 
-	
 	return configs.ForecastPeriod{}, nil
 }
 
